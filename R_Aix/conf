@@ -1,0 +1,392 @@
+## Last changed: 2022-05-12 06:48:25 UTC
+version 12.1X46-D35.1;
+system {
+    host-name R_Aix;
+    root-authentication {
+        encrypted-password "$1$MhSnJX5Y$4b4p/YXlMvyvUOR4UCEz81"; ## SECRET-DATA
+    }
+    name-server {
+        208.67.222.222;
+        208.67.220.220;
+        193.48.120.32;
+    }
+    login {
+        user admin {
+            uid 2002;
+            class super-user;
+            authentication {
+                encrypted-password "$1$Q9YRbyUe$NtEFow0LkvJ8bQfTZGPTS."; ## SECRET-DATA
+            }
+        }
+    }
+    services {
+        ssh;
+        telnet;
+        xnm-clear-text;
+        web-management {
+            http {
+                interface vlan.0;
+            }
+            https {
+                system-generated-certificate;
+                interface vlan.0;
+            }
+        }
+    }
+    syslog {
+        archive size 100k files 3;
+        user * {
+            any emergency;
+        }
+        file messages {
+            any critical;
+            authorization info;
+        }
+        file interactive-commands {
+            interactive-commands error;
+        }
+    }
+    max-configurations-on-flash 5;
+    max-configuration-rollbacks 5;
+    archival {
+        configuration {
+            transfer-on-commit;
+            archive-sites {
+                "ftp://tftp@10.1.10.100:69";
+            }
+        }
+    }
+    license {
+        autoupdate {
+            url https://ae1.juniper.net/junos/key_retrieval;
+        }
+    }
+}
+interfaces {
+    fe-0/0/0 {
+        unit 0 {
+            family inet {
+                address 192.168.141.2/23;
+            }
+            family inet6 {
+                address 2001:470:c84c:7::/64 {
+                    eui-64;
+                }
+            }
+        }
+    }
+    gr-0/0/0 {
+        unit 0 {
+            tunnel {
+                source 192.168.141.2;
+                destination 192.168.170.154;
+            }
+            family inet {
+                address 10.0.12.1/24;
+            }
+            family inet6 {
+                address 2001:470:c84c:87ff::1/64;
+            }
+        }
+    }
+    fe-0/0/1 {
+        unit 0 {
+            family inet {
+                address 10.1.0.254/24;
+            }
+            family inet6 {
+                address 2001:470:c84c:8000::1/64;
+            }
+        }
+    }
+    fe-0/0/2 {
+        unit 0 {
+            family ethernet-switching {
+                vlan {
+                    members vlan-trust;
+                }
+            }
+        }
+    }
+    fe-0/0/3 {
+        unit 0 {
+            family ethernet-switching {
+                vlan {
+                    members vlan-trust;
+                }
+            }
+        }
+    }
+    fe-0/0/4 {
+        unit 0 {
+            family ethernet-switching {
+                vlan {
+                    members vlan-trust;
+                }
+            }
+        }
+    }
+    fe-0/0/5 {
+        unit 0 {
+            family ethernet-switching {
+                vlan {
+                    members vlan-trust;
+                }
+            }
+        }
+    }
+    fe-0/0/6 {
+        unit 0 {
+            family ethernet-switching {
+                vlan {
+                    members vlan-trust;
+                }
+            }
+        }
+    }
+    fe-0/0/7 {
+        unit 0 {
+            family ethernet-switching {
+                vlan {
+                    members vlan-trust;
+                }
+            }
+        }
+    }
+    vlan {
+        unit 0 {
+            family inet {
+                address 192.168.1.1/24;
+            }
+        }
+    }
+}
+routing-options {
+    rib inet6.0 {
+        static {
+            route ::/0 next-hop 2001:470:c84c:7:baa3:77ff:fe53:9341;
+            route 2001:470:c84c:8000::/53 next-hop 2001:470:c84c:8000::2;
+            route 2001:470:c84c:a000::/53 next-hop gr-0/0/0.0;
+        }
+    }
+    static {
+        route 0.0.0.0/0 next-hop 192.168.140.1;
+        route 10.1.0.0/16 next-hop 10.1.0.1;
+        route 10.2.0.0/16 next-hop gr-0/0/0.0;
+    }
+}
+protocols {
+    stp;
+}
+security {
+    address-book {
+        global {
+            address serv-web 10.1.50.10/32;
+            address serv-asterisk 10.1.40.30/32;
+        }
+    }
+    forwarding-options {
+        family {
+            inet6 {
+                mode flow-based;
+            }
+        }
+    }
+    screen {
+        ids-option untrust-screen {
+            ip {
+                source-route-option;
+                tear-drop;
+            }
+            tcp {
+                syn-flood {
+                    alarm-threshold 1024;
+                    attack-threshold 200;
+                    source-threshold 1024;
+                    destination-threshold 2048;
+                    timeout 20;
+                }
+                land;
+            }
+        }
+    }
+    nat {
+        source {
+            rule-set NAT {
+                from interface fe-0/0/1.0;
+                to interface fe-0/0/0.0;
+                rule Network-NAT {
+                    description "Source-NAT for Network using egress interface";
+                    match {
+                        source-address [ 10.1.10.0/24 10.1.20.0/24 10.1.30.0/24 10.1.40.0/24 10.1.50.0/24 10.1.0.0/24 ];
+                    }
+                    then {
+                        source-nat {
+                            interface;
+                        }
+                    }
+                }
+                rule Network-NAT-IPV6 {
+                    match {
+                        source-address 2001:470:c84c:8000::/53;
+                    }
+                    then {
+                        source-nat {
+                            interface;
+                        }
+                    }
+                }
+            }
+        }
+        destination {
+            pool dst-nat-pool-1 {
+                address 10.1.50.10/32 port 80;
+            }
+            pool asterisk {
+                address 10.1.40.30/32 port 5060;
+            }
+            rule-set DMZ {
+                from interface fe-0/0/0.0;
+                rule web {
+                    match {
+                        destination-address 192.168.141.2/32;
+                        destination-port 80;
+                    }
+                    then {
+                        destination-nat {
+                            pool {
+                                dst-nat-pool-1;
+                            }
+                        }
+                    }
+                }
+                rule asterisk {
+                    match {
+                        destination-address 192.168.141.2/32;
+                        destination-port 5060;
+                    }
+                    then {
+                        destination-nat {
+                            pool {
+                                asterisk;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    policies {
+        from-zone trust to-zone untrust {
+            policy trust-to-untrust {
+                match {
+                    source-address any;
+                    destination-address any;
+                    application any;
+                }
+                then {
+                    permit;
+                }
+            }
+        }
+        from-zone untrust to-zone trust {
+            policy server-access {
+                match {
+                    source-address any;
+                    destination-address serv-web;
+                    application any;
+                }
+                then {
+                    permit;
+                }
+            }
+        }
+        from-zone trust to-zone gretunnel {
+            policy allow-gre-traf {
+                match {
+                    source-address any;
+                    destination-address any;
+                    application any;
+                }
+                then {
+                    permit;
+                }
+            }
+        }
+        from-zone gretunnel to-zone trust {
+            policy allow-gre-traf-in {
+                match {
+                    source-address any;
+                    destination-address any;
+                    application any;
+                }
+                then {
+                    permit;
+                }
+            }
+        }
+    }
+    zones {
+        security-zone trust {
+            host-inbound-traffic {
+                system-services {
+                    all;
+                }
+                protocols {
+                    all;
+                }
+            }
+            interfaces {
+                fe-0/0/1.0;
+            }
+        }
+        security-zone untrust {
+            screen untrust-screen;
+            host-inbound-traffic {
+                system-services {
+                    all;
+                }
+                protocols {
+                    all;
+                }
+            }
+            interfaces {
+                fe-0/0/0.0;
+            }
+        }
+        security-zone gretunnel {
+            interfaces {
+                gr-0/0/0.0;
+            }
+        }
+    }
+}
+firewall {
+    family inet {
+        filter from-cisco {
+            term 1 {
+                from {
+                    source-address {
+                        10.1.10.0/24;
+                        10.1.20.0/24;
+                        10.1.30.0/24;
+                        10.1.40.0/24;
+                        10.1.50.0/24;
+                        10.1.0.0/24;
+                        192.168.170.154/32;
+                    }
+                    destination-address {
+                        0.0.0.0/0;
+                    }
+                }
+                then accept;
+            }
+        }
+    }
+}
+vlans {
+    vlan-trust {
+        vlan-id 3;
+        l3-interface vlan.0;
+    }
+}
