@@ -1,0 +1,31 @@
+$ttl 3H
+$ORIGIN solea1.local.
+
+@		SOA	srvdns.solea1.local.	admin.solea1.local. 	(202218022 3h 1h 1w 1h)
+
+@		NS 	srvdns.solea1.local.
+
+srvdhcp		A	10.1.40.10
+srvdhcp		AAAA	2001:470:c84c:8400::2
+srvdns		A	10.1.40.15
+srvdns		AAAA	2001:470:c84c:8400::15
+srvpartage	A	10.1.40.20
+srvpartage	AAAA	2001:470:c84c:8400::20
+asterisk	A	10.1.40.30
+asterisk	AAAA	2001:470:c84c:8400:20c:29ff:fe00:558f	
+
+PC-Aix-1	A	10.1.10.8
+PC-Aix-1	AAAA	2001:470:c84c:8100:7abf:1924:b1cb:817a
+	
+
+PC-Val-1	A	10.2.10.1
+PC-Val-1	AAAA	2001:470:c84c:a100::10
+PC-Val-2	A	10.2.10.9
+PC-Val-2	AAAA	2001:470:c84c:a100::1001
+
+
+
+Webserver	A	10.1.50.10
+Webserver	AAAA	2001:470:c84c:8500:20c:29ff:feda:df2
+
+www		CNAME	Webserver

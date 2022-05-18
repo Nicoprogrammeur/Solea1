@@ -1,0 +1,13 @@
+$TTL 3h
+
+
+@		SOA	srvdns.solea1.local.	admin.solea1.local. (202218023 3h 1h 1w 1h)
+@		NS	srvdns.solea1.local.
+srvdns		A	10.1.40.15
+
+10.40		PTR	srvdhcp.solea1.local.
+15.40		PTR	srvdns.solea1.local.
+20.40		PTR	srvpartage.solea1.local.
+30.40		PTR	asterisk.solea1.local.
+10.50		PTR	Webserver.solea1.local.
+
