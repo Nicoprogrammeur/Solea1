@@ -1,0 +1,74 @@
+!
+version 12.3
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname solea1ap
+!
+enable secret 5 $1$B95z$V1mCVU61vtiEeS7Z6n5Pj1
+!
+ip subnet-zero
+ip name-server 10.1.40.15
+!
+!
+no aaa new-model
+dot11 syslog
+!
+dot11 ssid Solea1
+   authentication open 
+   guest-mode
+!
+!
+!
+username Cisco password 7 096F471A1A0A
+!
+bridge irb
+!
+!
+interface Dot11Radio0
+ no ip address
+ no ip route-cache
+ !
+ encryption key 1 size 40bit 7 EA645A679AB4 transmit-key
+ encryption mode wep mandatory 
+ !
+ ssid Solea1
+ !
+ speed basic-1.0 basic-2.0 basic-5.5 6.0 9.0 basic-11.0 12.0 18.0 24.0 36.0 48.0 54.0
+ channel 2412
+ station-role root
+ bridge-group 1
+ bridge-group 1 subscriber-loop-control
+ bridge-group 1 block-unknown-source
+ no bridge-group 1 source-learning
+ no bridge-group 1 unicast-flooding
+ bridge-group 1 spanning-disabled
+!
+interface FastEthernet0
+ ip address dhcp
+ no ip route-cache
+ duplex auto
+ speed auto
+ bridge-group 1
+ no bridge-group 1 source-learning
+ bridge-group 1 spanning-disabled
+!
+interface BVI1
+ ip address dhcp
+ no ip route-cache
+!
+ip http server
+no ip http secure-server
+ip http help-path http://www.cisco.com/warp/public/779/smbiz/prodconfig/help/eag
+!
+bridge 1 route ip
+!
+!
+!
+line con 0
+line vty 0 4
+ login local
+!
+end
