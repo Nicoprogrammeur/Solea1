@@ -1,6 +1,20 @@
 # Solea1
 
 Projet en groupe
-Créer un réseaux d'entreprise sécurisé ToIP avec deux site
+Créer un réseaux d'entreprise sécurisé ToIP avec deux sites distants
 
-Partie Réseaux Infrastructure
+# Partie Réseaux Infrastructure
+
+-> configuration des routeurs et commutateurs
+ + AP
+
+routeur :
+R_Aix
+R_Val
+
+commutateur :
+Sw_Aix
+
+# Partie Admin
+
+-> fichiers conf des serveurs DNS et DHCP
