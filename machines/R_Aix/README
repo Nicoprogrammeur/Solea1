@@ -5,17 +5,13 @@
 
 # interface fa0/0/0.0 (externe)
 ipv4 : 192.168.141.2/23
-ipv6 : 2001:470:c84c:7::/64 (eui-64)
 
 # interface fa0/0/1.0 (interne)
 ipv4 : 10.1.0.254/24
-ipv6 : 2001:470:c84c:8000::1/64
 
 # interface gre0/0/0.0
 # tunnel GRE reliant site AIX et VAL
 ipv4 : 10.0.12.1/24
-ipv6 : 2001:470:c84c:87ff::1/64
 
 # réseaux interne
 10.1.0.0/16
-2001:470:c84c:8000::/53
